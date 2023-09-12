@@ -10,7 +10,7 @@
 
                 <et-input :data="data.middleName" />
 
-                <et-input :data="data.phoneNumber" />
+                <et-input type="tel" :data="data.phoneNumber" />
 
                 <et-input :data="data.email" />
 
@@ -39,6 +39,11 @@ export default {
         return {
             data, registerStore, fail
         }
+    },
+    mounted() {
+        IMask(document.querySelector('[type="tel"]'), {
+            mask: '+7 (000) 000-00-00'
+        });
     }
 }
 </script>

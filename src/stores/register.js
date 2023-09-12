@@ -34,7 +34,7 @@ export const useRegisterStore = defineStore('register', () => {
             },
             phoneNumber : {
                 value: '',
-                pattern: /\d+/,
+                pattern: /^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$/,
                 fail: false,
                 failMessage: "Телефон должен содержать только цифры",
                 failNull : false,
@@ -52,25 +52,42 @@ export const useRegisterStore = defineStore('register', () => {
             },
             inn : {
                 value: '',
-                pattern: '',
-                fail: false
+                pattern: /.*/,
+                fail: false,
+                failMessage: "Неверный формат ИНН",
+                failNull : false,
+                label: "ИНН организации",
+                required : false
             },
             position : {
                 value: '',
-                pattern: '',
-                fail: false
+                pattern: /.*/,
+                fail: false,
+                failMessage: "Неверный формат ИНН",
+                failNull : false,
+                label: "Должность",
+                required : false
             },
             password : {
-                value : '',
-                pattern : '',
-                fail: false
+                value: '',
+                pattern: /.*/,
+                fail: false,
+                failMessage: "Неверный формат ИНН",
+                failNull : false,
+                label: "Пароль",
+                required : false
             },
             confirmPassword : {
-                value : '',
-                pattern : '',
-                fail: false
+                value: '',
+                pattern: /.*/,
+                fail: false,
+                failMessage: "Неверный формат ИНН",
+                failNull : false,
+                label: "Повторите пароль",
+                required : false
             }
         });
+
 
     //actions
     const nextStep = () => {
@@ -78,23 +95,59 @@ export const useRegisterStore = defineStore('register', () => {
     }
 
     const stepOne = () => {
-        console.log(dataInput.value);
         const go = [dataInput.value.name, dataInput.value.lastName, dataInput.value.middleName, dataInput.value.phoneNumber, dataInput.value.email].filter(function(el){
             if(!el.pattern.test(el.value)) {
                 if(el.required && el.value.trim() === '') {
                     el.failNull = true;
-                } else if(!el.required && el.value.trim() === '') {
-                    el.fail = false;
-                    el.failNull = false;
                 } else {
                     el.fail = true;
+                }
+
+                if(!el.required && el.value.trim() === '') {
+                    el.fail = false;
+                    el.failNull = false;
+                    return;
                 }
                 return el;
             }
         });
+        console.log(go);
         if(go.length < 1) nextStep();
+    }
+
+    //работа с паролем
+    const passwordMatches = ref(true),
+        passwordLength = ref(false),
+        passwordNumber = ref(false);
+    const checkPassword = () => {
+        if(dataInput.value.password.value.length > 8) {
+            passwordLength.value = true;
+        } else {
+            passwordLength.value = false;
+        }
+        if(/[0-9]+/g.test(dataInput.value.password.value)) {
+            passwordNumber.value = true;
+        } else {
+            passwordNumber.value = false;
+        }
+    }
+    const checkMatchesPasswords = () => {
+        if(dataInput.value.confirmPassword.value !== dataInput.value.password.value) {
+            passwordMatches.value = false
+            dataInput.value.confirmPassword.fail = true
+        } else {
+            passwordMatches.value = true
+            dataInput.value.confirmPassword.fail = false
+        }
+    }
+    const stepTwo = () => {
+        if(dataInput.value.confirmPassword !== dataInput.value.password) {
+            console.log('opa opa')
+        } else {
+            nextStep();
+        }
     }
   
   
-  return { stepRegistration, dataInput, nextStep, stepOne }
+  return { stepRegistration, dataInput, nextStep, stepOne, checkPassword, stepTwo, passwordMatches, passwordLength, passwordNumber, checkMatchesPasswords }
 })

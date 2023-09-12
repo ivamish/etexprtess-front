@@ -1,12 +1,8 @@
 <template >
-    <div>
-        <div class="field" :class="{ 'field--required': data.required, 'w100': fullWidth, 'failed': data.fail || data.failNull}">
-            <input @input="data.fail = false; data.failNull = false" v-model="data.value" :id="id" class="field__input"
-                :class="{ 'w100': fullWidth }" placeholder=" " :type="type">
-            <label :for="id" class="field__label">{{ data.label }}</label>
-        </div>
-        <p class="form__info" v-if="data.failNull">Данное поле обязательно для заполнения</p>
-        <p class="form__info" v-if="data.fail">{{ data.failMessage }}</p>
+    <div class="field" :class="{ 'field--required': data.required, 'w100': fullWidth, 'failed': data.fail || data.failNull}">
+            <input v-model="data.value" :id="id" class="field__input" placeholder=" " :type="show ? 'text' : 'password'">
+            <label :for="id" class="field__label">{{data.label}}</label>
+            <img @click="show = show ? false : true" class="field__eye" src="@/assets/icons/eye.svg" alt="">
     </div>
 </template>
 <script>
@@ -20,23 +16,21 @@ export default {
         fullWidth : {
             type : Boolean,
             default : false
-        },
-        type : {
-            type : String,
-            default : 'text'
         }
     },
     setup(props) {
         const data = props.data,
               id = ref(''),
               fullwidth = props.fullWidth,
-              type = props.type
+              type = props.type,
+              show = ref(false);
 
         return {
             id,
             data,
             fullwidth,
-            type
+            type,
+            show
         }
     },
     mounted : function () {
@@ -51,6 +45,7 @@ export default {
             }
             return result;
         }
+
         this.id = getAlphaNumericRandom(15);
     }
 }
@@ -67,6 +62,14 @@ export default {
     }
     .field {
         position: relative;
+        &__eye {
+            display: block;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
         &--required {
             .field__label::after {
                 content: '*';
@@ -99,7 +102,7 @@ export default {
             left: 15px;
             transform: translateY(-50%);
             cursor: text;
-            transition: all .24s;
+            transition: all .4s;
             font-size: 15px;
         }
         &__input:focus + &__label {
@@ -113,9 +116,6 @@ export default {
         &__input:not(:placeholder-shown) + &__label {
             font-size: 10px;
             top: 20%;
-        }
-        .w100 {
-            width: 100%;
         }
     }
 </style>
