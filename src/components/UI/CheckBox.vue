@@ -31,7 +31,7 @@ export default {
                 background-color: #F2F3F5;
                 position: absolute;
                 left: 0;
-                top: 0%;
+                top: -25%;
                 transform: translateY(50%);
             }
         }

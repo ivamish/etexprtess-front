@@ -1,53 +1,36 @@
 <template >
-    <div class="field" :class="{'field--required' : required, 'w100': fullWidth, 'failed' : failed}">
-            <input @input="$emit('update:value', $event.target.value)" :id="id" class="field__input" :class="{'w100': fullWidth}" placeholder=" " type="text">
-            <label :for="id" class="field__label">{{label}}</label>
+    <div>
+        <div class="field" :class="{ 'field--required': data.required, 'w100': fullWidth, 'failed': data.fail || data.failNull}">
+            <input @input="data.fail = false; data.failNull = false" v-model="data.value" :id="id" class="field__input"
+                :class="{ 'w100': fullWidth }" placeholder=" " type="text">
+            <label :for="id" class="field__label">{{ data.label }}</label>
+        </div>
+        <p class="form__info" v-if="data.failNull">Данное поле обязательно для заполнения</p>
+        <p class="form__info" v-if="data.fail">{{ data.failMessage }}</p>
     </div>
 </template>
 <script>
 import { ref, watch } from "vue";
-import { useRegisterStore } from '@/stores/register.js';
 export default {
     props: {
-        label : {
-            type: String,
-            required: true
-        },
-        required : {
-            type: Boolean,
-            default: false
-        },
-        value : {
-            type: String,
-            default: ""
+        data : {
+            type : Object,
+            required : true
         },
         fullWidth : {
             type : Boolean,
             default : false
         },
-        pattern: {
-            type: String,
-            required: false
-        },
-        failed : {
-            type: Boolean,
-            default: false
-        }
     },
     setup(props) {
-        const label = ref(props.label),
-              required = ref(props.required),
+        const data = props.data,
               id = ref(''),
-              fullWidth = props.fullWidth,
-              registerStore = useRegisterStore(),
-              failed = props.failed;
+              fullwidth = props.fullWidth
 
         return {
-            label,
-            required,
             id,
-            fullWidth,
-            failed
+            data,
+            fullwidth
         }
     },
     mounted : function () {
@@ -69,8 +52,13 @@ export default {
 </script>
 <style scoped lang="scss">
     .failed {
-        .field__input {
-            border: 1px solid red;
+        .field {
+            &__input {
+                border: #F3223C 1px solid;
+                &:focus {
+                    border: 1px solid #F3223C;
+                }
+            }
         }
     }
     .field {
